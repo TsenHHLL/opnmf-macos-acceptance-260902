@@ -1,4 +1,5 @@
 artifacts/
+results/
 local_static_check.log
 GUI-260902.zip
 .secrets/

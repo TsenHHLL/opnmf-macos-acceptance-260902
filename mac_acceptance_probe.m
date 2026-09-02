@@ -26,6 +26,7 @@ try
     cd(toolboxRoot);
     addpath(toolboxRoot, "-begin");
     addpath(fullfile(toolboxRoot, "depend"), "-begin");
+    addpath(fullfile(toolboxRoot, "tests", "helpers"), "-begin");
 
     environment = struct( ...
         "Timestamp", string(datetime("now", "TimeZone", "local")), ...

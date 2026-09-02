@@ -1,0 +1,73 @@
+name: OPNMF Apple Silicon graphics cross-check
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  MLM_LICENSE_TOKEN: ${{ secrets.MLM_LICENSE_TOKEN }}
+
+jobs:
+  test:
+    name: Apple Silicon macOS 14 - ${{ matrix.shard }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { shard: probe_visible_launch, test_file: TestOPNMFApp.m, index: 2, full_count: 101 }
+          - { shard: probe_three_workflows, test_file: TestOPNMFApp.m, index: 6, full_count: 101 }
+          - { shard: probe_compare_structure, test_file: TestOPNMFApp.m, index: 31, full_count: 101 }
+          - { shard: probe_diagnostic_validity, test_file: TestDiagnosticAssessmentRevisions.m, index: 1, full_count: 7 }
+          - { shard: probe_factor_heatmap, test_file: TestFactorHeatmapItemNames.m, index: 1, full_count: 2 }
+    runs-on: macos-14
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out acceptance package
+        uses: actions/checkout@v6
+
+      - name: Decrypt and verify exact release archive
+        shell: bash
+        env:
+          ARCHIVE_KEY_HEX: ${{ secrets.ARCHIVE_KEY_HEX }}
+        run: |
+          set -euo pipefail
+          node decrypt_release.mjs GUI-260902.zip.enc GUI-260902.zip
+          echo "24BC909FA1D7946B21E2FE644C674B1B072CD22DAAAF16A9A3600B96B9CA1CE0  GUI-260902.zip" | shasum -a 256 -c -
+          ditto -x -k GUI-260902.zip .
+          mkdir -p "artifacts/micro/${{ matrix.shard }}"
+          sw_vers | tee "artifacts/micro/${{ matrix.shard }}/macos.txt"
+          uname -a | tee -a "artifacts/micro/${{ matrix.shard }}/macos.txt"
+          sysctl -n hw.memsize | awk '{printf "MemoryBytes: %s\n", $1}' | tee -a "artifacts/micro/${{ matrix.shard }}/macos.txt"
+
+      - name: Ensure Java 11
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! /usr/libexec/java_home -v 11 >/dev/null 2>&1; then
+            brew install --cask corretto@11
+          fi
+          echo "JAVA_HOME=$(/usr/libexec/java_home -v 11)" >> "$GITHUB_ENV"
+
+      - name: Set up MATLAB and required toolbox
+        uses: matlab-actions/setup-matlab@v3
+        with:
+          release: R2024b
+          products: Statistics_and_Machine_Learning_Toolbox
+
+      - name: Run representative graphics test
+        uses: matlab-actions/run-command@v3
+        with:
+          command: mac_micro_probe("${{ matrix.shard }}", "${{ matrix.test_file }}", ${{ matrix.index }}, ${{ matrix.index }}, ${{ matrix.full_count }})
+          generate-summary: true
+
+      - name: Upload cross-check evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: opnmf-macos14-arm64-${{ matrix.shard }}
+          path: artifacts/micro/${{ matrix.shard }}
+          if-no-files-found: warn
+          retention-days: 14

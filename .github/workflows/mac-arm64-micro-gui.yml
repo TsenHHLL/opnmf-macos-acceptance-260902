@@ -17,20 +17,22 @@ jobs:
       matrix:
         include:
           - { shard: gui_main_001_005, test_file: TestOPNMFApp.m, start: 1, stop: 5, full_count: 101 }
-          - { shard: gui_main_006_010, test_file: TestOPNMFApp.m, start: 6, stop: 10, full_count: 101 }
+          - { shard: gui_main_006, test_file: TestOPNMFApp.m, start: 6, stop: 6, full_count: 101 }
+          - { shard: gui_main_007_010, test_file: TestOPNMFApp.m, start: 7, stop: 10, full_count: 101 }
           - { shard: gui_main_011_015, test_file: TestOPNMFApp.m, start: 11, stop: 15, full_count: 101 }
-          - { shard: gui_main_016_020, test_file: TestOPNMFApp.m, start: 16, stop: 20, full_count: 101 }
           - { shard: gui_main_021_025, test_file: TestOPNMFApp.m, start: 21, stop: 25, full_count: 101 }
           - { shard: gui_main_026_030, test_file: TestOPNMFApp.m, start: 26, stop: 30, full_count: 101 }
-          - { shard: gui_main_031_035, test_file: TestOPNMFApp.m, start: 31, stop: 35, full_count: 101 }
+          - { shard: gui_main_031, test_file: TestOPNMFApp.m, start: 31, stop: 31, full_count: 101 }
+          - { shard: gui_main_032_035, test_file: TestOPNMFApp.m, start: 32, stop: 35, full_count: 101 }
           - { shard: gui_main_036_040, test_file: TestOPNMFApp.m, start: 36, stop: 40, full_count: 101 }
           - { shard: gui_main_041_045, test_file: TestOPNMFApp.m, start: 41, stop: 45, full_count: 101 }
           - { shard: gui_main_046_050, test_file: TestOPNMFApp.m, start: 46, stop: 50, full_count: 101 }
           - { shard: gui_main_051, test_file: TestOPNMFApp.m, start: 51, stop: 51, full_count: 101 }
-          - { shard: gui_main_069_073, test_file: TestOPNMFApp.m, start: 69, stop: 73, full_count: 101 }
+          - { shard: gui_main_069, test_file: TestOPNMFApp.m, start: 69, stop: 69, full_count: 101 }
+          - { shard: gui_main_070_073, test_file: TestOPNMFApp.m, start: 70, stop: 73, full_count: 101 }
           - { shard: gui_main_074_078, test_file: TestOPNMFApp.m, start: 74, stop: 78, full_count: 101 }
           - { shard: gui_main_079_083, test_file: TestOPNMFApp.m, start: 79, stop: 83, full_count: 101 }
-          - { shard: gui_main_084_088, test_file: TestOPNMFApp.m, start: 84, stop: 88, full_count: 101 }
+          - { shard: gui_main_088, test_file: TestOPNMFApp.m, start: 88, stop: 88, full_count: 101 }
           - { shard: gui_main_089_093, test_file: TestOPNMFApp.m, start: 89, stop: 93, full_count: 101 }
           - { shard: gui_main_094_098, test_file: TestOPNMFApp.m, start: 94, stop: 98, full_count: 101 }
           - { shard: gui_main_099_101, test_file: TestOPNMFApp.m, start: 99, stop: 101, full_count: 101 }
@@ -50,13 +52,13 @@ jobs:
           - { shard: gui_support_assignment, test_file: TestAssignmentAlignmentGUI.m, start: 1, stop: 1, full_count: 1 }
           - { shard: gui_support_exports, test_file: TestExports.m, start: 1, stop: 3, full_count: 3 }
           - { shard: gui_support_factor_heatmap, test_file: TestFactorHeatmapItemNames.m, start: 1, stop: 2, full_count: 2 }
-          - { shard: gui_support_imputation, test_file: TestImputationComparison.m, start: 1, stop: 4, full_count: 4 }
+          - { shard: gui_support_imputation_04, test_file: TestImputationComparison.m, start: 4, stop: 4, full_count: 4 }
           - { shard: gui_support_independent_overview, test_file: TestIndependentSampleOverview.m, start: 1, stop: 1, full_count: 1 }
           - { shard: gui_support_kfold_summary, test_file: TestKFoldSameDataSummaryPresentation.m, start: 1, stop: 1, full_count: 1 }
           - { shard: gui_support_local_extrema, test_file: TestLocalExtremaPresentation.m, start: 1, stop: 1, full_count: 1 }
           - { shard: gui_support_posthoc_multi, test_file: TestPosthocMultiComparison.m, start: 1, stop: 4, full_count: 4 }
     runs-on: macos-15
-    timeout-minutes: 35
+    timeout-minutes: 15
 
     steps:
       - name: Check out acceptance package

@@ -1,0 +1,107 @@
+name: OPNMF Apple Silicon micro GUI shards
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  MLM_LICENSE_TOKEN: ${{ secrets.MLM_LICENSE_TOKEN }}
+
+jobs:
+  test:
+    name: Apple Silicon micro - ${{ matrix.shard }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { shard: gui_main_001_005, test_file: TestOPNMFApp.m, start: 1, stop: 5, full_count: 101 }
+          - { shard: gui_main_006_010, test_file: TestOPNMFApp.m, start: 6, stop: 10, full_count: 101 }
+          - { shard: gui_main_011_015, test_file: TestOPNMFApp.m, start: 11, stop: 15, full_count: 101 }
+          - { shard: gui_main_016_020, test_file: TestOPNMFApp.m, start: 16, stop: 20, full_count: 101 }
+          - { shard: gui_main_021_025, test_file: TestOPNMFApp.m, start: 21, stop: 25, full_count: 101 }
+          - { shard: gui_main_026_030, test_file: TestOPNMFApp.m, start: 26, stop: 30, full_count: 101 }
+          - { shard: gui_main_031_035, test_file: TestOPNMFApp.m, start: 31, stop: 35, full_count: 101 }
+          - { shard: gui_main_036_040, test_file: TestOPNMFApp.m, start: 36, stop: 40, full_count: 101 }
+          - { shard: gui_main_041_045, test_file: TestOPNMFApp.m, start: 41, stop: 45, full_count: 101 }
+          - { shard: gui_main_046_050, test_file: TestOPNMFApp.m, start: 46, stop: 50, full_count: 101 }
+          - { shard: gui_main_051, test_file: TestOPNMFApp.m, start: 51, stop: 51, full_count: 101 }
+          - { shard: gui_main_069_073, test_file: TestOPNMFApp.m, start: 69, stop: 73, full_count: 101 }
+          - { shard: gui_main_074_078, test_file: TestOPNMFApp.m, start: 74, stop: 78, full_count: 101 }
+          - { shard: gui_main_079_083, test_file: TestOPNMFApp.m, start: 79, stop: 83, full_count: 101 }
+          - { shard: gui_main_084_088, test_file: TestOPNMFApp.m, start: 84, stop: 88, full_count: 101 }
+          - { shard: gui_main_089_093, test_file: TestOPNMFApp.m, start: 89, stop: 93, full_count: 101 }
+          - { shard: gui_main_094_098, test_file: TestOPNMFApp.m, start: 94, stop: 98, full_count: 101 }
+          - { shard: gui_main_099_101, test_file: TestOPNMFApp.m, start: 99, stop: 101, full_count: 101 }
+          - { shard: gui_support_diag_01, test_file: TestDiagnosticAssessmentRevisions.m, start: 1, stop: 1, full_count: 7 }
+          - { shard: gui_support_diag_02, test_file: TestDiagnosticAssessmentRevisions.m, start: 2, stop: 2, full_count: 7 }
+          - { shard: gui_support_diag_03, test_file: TestDiagnosticAssessmentRevisions.m, start: 3, stop: 3, full_count: 7 }
+          - { shard: gui_support_diag_04, test_file: TestDiagnosticAssessmentRevisions.m, start: 4, stop: 4, full_count: 7 }
+          - { shard: gui_support_diag_05, test_file: TestDiagnosticAssessmentRevisions.m, start: 5, stop: 5, full_count: 7 }
+          - { shard: gui_support_diag_06, test_file: TestDiagnosticAssessmentRevisions.m, start: 6, stop: 6, full_count: 7 }
+          - { shard: gui_support_diag_07, test_file: TestDiagnosticAssessmentRevisions.m, start: 7, stop: 7, full_count: 7 }
+          - { shard: gui_support_posthoc_01, test_file: TestPosthoc.m, start: 1, stop: 4, full_count: 11 }
+          - { shard: gui_support_posthoc_02, test_file: TestPosthoc.m, start: 5, stop: 8, full_count: 11 }
+          - { shard: gui_support_posthoc_03, test_file: TestPosthoc.m, start: 9, stop: 11, full_count: 11 }
+          - { shard: gui_support_site_01, test_file: TestSiteStratification.m, start: 1, stop: 4, full_count: 11 }
+          - { shard: gui_support_site_02, test_file: TestSiteStratification.m, start: 5, stop: 8, full_count: 11 }
+          - { shard: gui_support_site_03, test_file: TestSiteStratification.m, start: 9, stop: 11, full_count: 11 }
+          - { shard: gui_support_assignment, test_file: TestAssignmentAlignmentGUI.m, start: 1, stop: 1, full_count: 1 }
+          - { shard: gui_support_exports, test_file: TestExports.m, start: 1, stop: 3, full_count: 3 }
+          - { shard: gui_support_factor_heatmap, test_file: TestFactorHeatmapItemNames.m, start: 1, stop: 2, full_count: 2 }
+          - { shard: gui_support_imputation, test_file: TestImputationComparison.m, start: 1, stop: 4, full_count: 4 }
+          - { shard: gui_support_independent_overview, test_file: TestIndependentSampleOverview.m, start: 1, stop: 1, full_count: 1 }
+          - { shard: gui_support_kfold_summary, test_file: TestKFoldSameDataSummaryPresentation.m, start: 1, stop: 1, full_count: 1 }
+          - { shard: gui_support_local_extrema, test_file: TestLocalExtremaPresentation.m, start: 1, stop: 1, full_count: 1 }
+          - { shard: gui_support_posthoc_multi, test_file: TestPosthocMultiComparison.m, start: 1, stop: 4, full_count: 4 }
+    runs-on: macos-15
+    timeout-minutes: 35
+
+    steps:
+      - name: Check out acceptance package
+        uses: actions/checkout@v6
+
+      - name: Decrypt and verify exact release archive
+        shell: bash
+        env:
+          ARCHIVE_KEY_HEX: ${{ secrets.ARCHIVE_KEY_HEX }}
+        run: |
+          set -euo pipefail
+          node decrypt_release.mjs GUI-260902.zip.enc GUI-260902.zip
+          echo "24BC909FA1D7946B21E2FE644C674B1B072CD22DAAAF16A9A3600B96B9CA1CE0  GUI-260902.zip" | shasum -a 256 -c -
+          ditto -x -k GUI-260902.zip .
+          mkdir -p "artifacts/micro/${{ matrix.shard }}"
+          sw_vers | tee "artifacts/micro/${{ matrix.shard }}/macos.txt"
+          uname -a | tee -a "artifacts/micro/${{ matrix.shard }}/macos.txt"
+          sysctl -n hw.memsize | awk '{printf "MemoryBytes: %s\n", $1}' | tee -a "artifacts/micro/${{ matrix.shard }}/macos.txt"
+
+      - name: Ensure Java 11
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! /usr/libexec/java_home -v 11 >/dev/null 2>&1; then
+            brew install --cask corretto@11
+          fi
+          echo "JAVA_HOME=$(/usr/libexec/java_home -v 11)" >> "$GITHUB_ENV"
+
+      - name: Set up MATLAB and required toolbox
+        uses: matlab-actions/setup-matlab@v3
+        with:
+          release: R2024b
+          products: Statistics_and_Machine_Learning_Toolbox
+
+      - name: Run micro shard with per-test checkpoints
+        uses: matlab-actions/run-command@v3
+        with:
+          command: mac_micro_probe("${{ matrix.shard }}", "${{ matrix.test_file }}", ${{ matrix.start }}, ${{ matrix.stop }}, ${{ matrix.full_count }})
+          generate-summary: true
+
+      - name: Upload micro shard evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: opnmf-macos-arm64-micro-${{ matrix.shard }}
+          path: artifacts/micro/${{ matrix.shard }}
+          if-no-files-found: warn
+          retention-days: 14

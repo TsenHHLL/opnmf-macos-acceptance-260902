@@ -1,0 +1,83 @@
+name: OPNMF macOS acceptance
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  # Optional for public repositories; required for private repositories.
+  MLM_LICENSE_TOKEN: ${{ secrets.MLM_LICENSE_TOKEN }}
+
+jobs:
+  test:
+    name: MATLAB R2024b - ${{ matrix.label }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-15-intel
+            label: macOS 15 Intel
+            arch: x64
+          - runner: macos-15
+            label: macOS 15 Apple Silicon
+            arch: arm64
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 120
+
+    steps:
+      - name: Check out acceptance package
+        uses: actions/checkout@v6
+
+      - name: Decrypt the protected release archive
+        shell: bash
+        env:
+          ARCHIVE_KEY_HEX: ${{ secrets.ARCHIVE_KEY_HEX }}
+        run: node decrypt_release.mjs GUI-260902.zip.enc GUI-260902.zip
+
+      - name: Verify and extract exact release archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "24BC909FA1D7946B21E2FE644C674B1B072CD22DAAAF16A9A3600B96B9CA1CE0  GUI-260902.zip" | shasum -a 256 -c -
+          ditto -x -k GUI-260902.zip .
+          test -f GUI-260902/OPNMFApp.m
+          test -f GUI-260902/tests/TestPosthocMultiComparison.m
+          mkdir -p "artifacts/${{ matrix.arch }}"
+          sw_vers | tee "artifacts/${{ matrix.arch }}/macos.txt"
+          uname -a | tee -a "artifacts/${{ matrix.arch }}/macos.txt"
+          sysctl -n machdep.cpu.brand_string 2>/dev/null | tee -a "artifacts/${{ matrix.arch }}/macos.txt" || true
+          sysctl -n hw.memsize 2>/dev/null | awk '{printf "MemoryBytes: %s\n", $1}' | tee -a "artifacts/${{ matrix.arch }}/macos.txt" || true
+
+      - name: Ensure Java 11 on Apple Silicon
+        if: matrix.arch == 'arm64'
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! /usr/libexec/java_home -v 11 >/dev/null 2>&1; then
+            brew install --cask corretto@11
+          fi
+          echo "JAVA_HOME=$(/usr/libexec/java_home -v 11)" >> "$GITHUB_ENV"
+          /usr/libexec/java_home -V 2>&1 | tee "artifacts/${{ matrix.arch }}/java.txt"
+
+      - name: Set up MATLAB and required toolbox
+        uses: matlab-actions/setup-matlab@v3
+        with:
+          release: R2024b
+          products: Statistics_and_Machine_Learning_Toolbox
+
+      - name: Run environment probe, GUI smoke test, and all 257 tests
+        uses: matlab-actions/run-command@v3
+        with:
+          command: mac_acceptance_probe("${{ matrix.arch }}")
+          generate-summary: true
+
+      - name: Upload acceptance evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: opnmf-macos-${{ matrix.arch }}-evidence
+          path: artifacts/${{ matrix.arch }}
+          if-no-files-found: warn
+          retention-days: 14
